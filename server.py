@@ -70,7 +70,7 @@ class Server:
                                         "board": self.board
                                     }
                                 ).encode())
-                                break
+                            break
                         self.now_turn = "player1" if self.now_turn == "player2" else "player2"
                         for client in self.clients:
                             client.sendall(json.dumps(

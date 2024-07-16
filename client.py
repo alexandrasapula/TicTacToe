@@ -2,6 +2,7 @@ import pygame
 import socket
 import json
 import threading
+import time
 
 
 class Client():
@@ -16,13 +17,15 @@ class Client():
         self.run = True
         self.game_over = False
         self.lock = threading.Lock()
+        self.winner = None
+        self.timer = 0
 
         pygame.init()
         self.width, self.heigth = 300, 300
         self.screen = pygame.display.set_mode((self.width, self.heigth))
         pygame.display.set_caption("Крестики-нолики")
         self.clock = pygame.time.Clock()
-        self.font = pygame.font.Font(None, 36)
+        self.font = pygame.font.Font(None, 72)
 
         self.thread = threading.Thread(target=self.handle_messages)
         self.thread.start()
@@ -61,14 +64,8 @@ class Client():
                     elif message["type"] == "END":
                         with self.lock:
                             self.board = message["board"]
-                            winner = message["winner"]
+                            self.winner = message["winner"]
                             self.game_over = True
-                            self.screen.fill((0, 0, 0))
-                            if winner == "draw":
-                                self.draw_text("It's a draw", self.font, (255, 255, 255), self.screen, 50, 50)
-                            else:
-                                self.draw_text(f"{winner} wins", self.font, (255, 255, 255), self.screen, 50, 50)
-                            pygame.display.flip()
             except Exception as e:
                 print(f"Error: {e}")
                 self.run = False
@@ -92,7 +89,19 @@ class Client():
                                         "position": [row, col]
                                     }
                                 ).encode())
-            self.draw_board()
+            if self.game_over:
+                if self.timer == 0:
+                    self.draw_board()
+                    time.sleep(2)
+                self.screen.fill((0, 0, 0))
+                if self.winner == "draw":
+                    self.draw_text("It's a draw", self.font, (255, 255, 255), self.screen, 70, 100)
+                else:
+                    self.draw_text(f"{self.winner} wins", self.font, (255, 255, 255), self.screen, 70, 100)
+                pygame.display.flip()
+                self.timer += 1
+            else:
+                self.draw_board()
             self.clock.tick(60)
 
         pygame.quit()
