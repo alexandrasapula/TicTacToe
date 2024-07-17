@@ -37,7 +37,8 @@ class Server:
         print(f"Connected by {addr}")
         if len(self.players) < 2:
             player_id = f"player{len(self.players)+1}"
-            self.players.append(player_id)
+            player_symbol = "X" if player_id == "player1" else "O"
+            self.players.append((player_id, player_symbol))
         else:
             conn.close()
             return
@@ -46,7 +47,8 @@ class Server:
                 "type": "START",
                 "board": self.board,
                 "now_turn": self.now_turn,
-                "player_id": player_id
+                "player_id": player_id,
+                "player_symbol": player_symbol
             }
         ).encode())
         while True:
@@ -67,7 +69,8 @@ class Server:
                                     {
                                         "type": "END",
                                         "winner": winner,
-                                        "board": self.board
+                                        "board": self.board,
+                                        "winner_id": self.now_turn,
                                     }
                                 ).encode())
                             break
