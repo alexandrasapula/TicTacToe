@@ -5,7 +5,7 @@ from game import Game
 
 
 class Server:
-    def __init__(self, host='localhost', port=12345):
+    def __init__(self, host='localhost', port=12345) -> None:
         self.host = host
         self.port = port
         self.clients = []
@@ -15,7 +15,7 @@ class Server:
         self.server.bind((self.host, self.port))
         self.server.listen()
 
-    def handle_clients(self, conn, addr):
+    def handle_clients(self, conn: socket.socket, addr: tuple) -> None:
         print(f"Connected by {addr}")
         player_id = f"player{len(self.clients)+1}"
         self.clients.append((conn, player_id))
@@ -27,7 +27,7 @@ class Server:
             self.games.append(game)
             self.start_game(game)
 
-    def start_game(self, game):
+    def start_game(self, game: Game) -> None:
         for player, (conn, player_id) in game.players.items():
             player_symbol = "X" if player == "player1" else "O"
             conn.sendall(json.dumps(
@@ -39,20 +39,20 @@ class Server:
                     "player_symbol": player_symbol
                 }
             ).encode())
-            threading.Thread(target=self.lopp, args=(game, conn, player)).start()
+            threading.Thread(target=self.lopp, args=(game, conn, player_id)).start()
 
-    def lopp(self, game, conn, player):
+    def lopp(self, game: Game, conn: socket.socket, player_id: str) -> None:
         while True:
             try:
                 data = conn.recv(1024)
                 if not data:
                     break
                 message = json.loads(data.decode())
-                if message["type"] == "MOVE" and game.now_turn == player:
+                if message["type"] == "MOVE" and game.now_turn == player_id:
                     pos = message["position"]
                     row, col = pos
                     if game.board[row][col] == "":
-                        game.board[row][col] = "X" if game.now_turn == "player1" else "O"
+                        game.board[row][col] = "X" if game.now_turn == game.players["player1"][1] else "O"
                         winner = game.check_winners()
                         if winner:
                             for player_conn, _ in game.players.values():
@@ -65,7 +65,7 @@ class Server:
                                     }
                                 ).encode())
                             break
-                        game.now_turn = "player1" if game.now_turn == "player2" else "player2"
+                        game.now_turn = game.players["player1"][1] if game.now_turn == game.players["player2"][1] else game.players["player2"][1]
                         for player_conn, _ in game.players.values():
                             player_conn.sendall(json.dumps(
                                 {
@@ -78,7 +78,7 @@ class Server:
                 break
         conn.close()
 
-    def main(self):
+    def main(self) -> None:
         print("Server OK")
         while True:
             conn, addr = self.server.accept()

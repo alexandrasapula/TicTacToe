@@ -1,13 +1,13 @@
 class Game:
-    def __init__(self, player1, player2, game_id):
-        self.board = [["", "", ""], ["", "", ""], ["", "", ""]]
-        self.now_turn = "player1"
+    def __init__(self, player1: tuple, player2: tuple) -> None:
         self.players = {
             "player1": player1,
             "player2": player2
         }
+        self.board = [["", "", ""], ["", "", ""], ["", "", ""]]
+        self.now_turn = player1[1]
 
-    def check_winners(self):
+    def check_winners(self) -> str | None:
         for row in self.board:
             if row[0] == row[1] == row[2] and row[0] != "":
                 return row[0]

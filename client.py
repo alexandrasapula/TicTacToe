@@ -6,7 +6,7 @@ import time
 
 
 class Client():
-    def __init__(self, host='localhost', port=12345):
+    def __init__(self, host='localhost', port=12345) -> None:
         self.host = host
         self.port = port
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -33,9 +33,9 @@ class Client():
         self.thread = threading.Thread(target=self.handle_messages)
         self.thread.start()
 
-    def draw_board(self):
+    def draw_board(self) -> None:
         self.screen.fill((0, 0, 0))
-        self.draw_text(f"You: {self.player_symbol}", self.font_small, (255, 255, 0), self.screen, 110, 330)
+        self.draw_text(f"You: {self.player_symbol}", self.font_small, (255, 255, 0), self.screen, 100, 330)
         for row in range(3):
             for col in range(3):
                 pygame.draw.rect(self.screen, (255, 255, 255), (col*100, row*100, 100, 100), 3)
@@ -46,13 +46,13 @@ class Client():
                     pygame.draw.circle(self.screen, (0, 255, 255), (col*100+50, row*100+50), 50, 5)
         pygame.display.flip()
 
-    def draw_text(self, text, font, color, surface, x, y):
+    def draw_text(self, text: str, font: pygame.font.Font, color: tuple, surface: pygame.Surface, x: int, y: int) -> None:
         text_obj = font.render(text, True, color)
         text_rect = text_obj.get_rect()
         text_rect.topleft = (x, y)
         surface.blit(text_obj, text_rect)
 
-    def handle_messages(self):
+    def handle_messages(self) -> None:
         while self.run:
             try:
                 data = self.client.recv(1024)
@@ -77,7 +77,7 @@ class Client():
                 self.run = False
                 break
 
-    def loop(self):
+    def loop(self) -> None:
         while self.run:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
