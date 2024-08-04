@@ -1,11 +1,11 @@
 class Game:
-    def __init__(self, player1: tuple, player2: tuple) -> None:
+    def __init__(self, player1: tuple, random_symbol=False) -> None:
         self.players = {
-            "player1": player1,
-            "player2": player2
+            "player1": player1
         }
         self.board = [["", "", ""], ["", "", ""], ["", "", ""]]
-        self.now_turn = player1[1]
+        self.now_turn = None
+        self.random_symbol = random_symbol
 
     def check_winners(self) -> str | None:
         for row in self.board:
