@@ -2,7 +2,6 @@ import pygame
 import socket
 import json
 import threading
-import time
 
 
 class Client():
@@ -21,7 +20,6 @@ class Client():
         self.lock = threading.Lock()
         self.winner = None
         self.timer = 0
-        self.game_created = False
         self.current_menu = "main"
         self.available_games = []
 
@@ -80,7 +78,6 @@ class Client():
                     elif message["type"] == "CONNECTED":
                         self.player = message["player_id"]
                     elif message["type"] == "CREATED":
-                        self.game_created = True
                         self.current_menu = "waiting"
                     elif message["type"] == "LIST":
                         self.available_games = message["games"]
@@ -194,7 +191,7 @@ class Client():
                 with self.lock:
                     if self.timer == 0:
                         self.draw_board()
-                        time.sleep(2)
+                        pygame.time.delay(2000)
                     self.screen.fill((0, 0, 0))
                     if self.winner == "draw":
                         self.draw_text("It's a draw", self.font, (255, 255, 255), self.screen, 50, 100)
